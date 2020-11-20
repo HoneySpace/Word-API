@@ -13,6 +13,8 @@ namespace Word
         static void Main(string[] args)
         {
             //COMFormatter.Apply();
+            XMLFormatter xmlFormatter = new XMLFormatter();
+            xmlFormatter.GetDoc();
         }
     }
 }
