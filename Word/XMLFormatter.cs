@@ -38,7 +38,7 @@ namespace Word
                     if (CheckNode(node)) InsertData(node);
                 }
             }
-            doc.Save("D:/Отчёт.xml");
+            doc.Save("D:/Отчёт.doc");
             Console.WriteLine("End");
             Console.ReadKey();
         }
