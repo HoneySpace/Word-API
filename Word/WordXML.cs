@@ -13,6 +13,7 @@ namespace Word
         public static XNamespace Xmlns = XNamespace.Xmlns;
         public static XNamespace None = XNamespace.None;
 
-        public static XNamespace W = @"http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+        public static XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+        public static XNamespace Pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
     }
 }
