@@ -14,17 +14,26 @@ namespace Word
     class XMLFormatter
     {
         private XDocument doc = XDocument.Load(@"D:/a2.xml");
+        private XElement body;
         private string openTag = "{{";
         private string closeTag = "}}";
+        private Random rand = new Random();
 
-        public void GetDoc()
+        public XMLFormatter()
         {
-            Console.WriteLine(WordXML.W + "body");
-            XElement body = doc.Root.Elements(WordXML.Pkg + "part")
+            body = doc.Root.Elements(WordXML.Pkg + "part")
                 .FirstOrDefault(n => n.Attribute(WordXML.Pkg + "name").Value == "/word/document.xml")
                 .Element(WordXML.Pkg + "xmlData")
                 .Element(WordXML.W + "document")
                 .Element(WordXML.W + "body");
+        }
+
+        private enum tags
+        { number, animalType, action, velocity, distanceMeasure, timeMeasure }
+
+        public void GetDoc()
+        {
+            Console.WriteLine(WordXML.W + "body");
             foreach (XElement p in body.Elements(WordXML.W + "p"))
             {
                 p.Elements(WordXML.W + "proofErr").Remove();
@@ -38,11 +47,30 @@ namespace Word
                     if (CheckNode(node)) InsertData(node);
                 }
             }
+
+            AppendP("Я это написал в шарпе");
+            AppendP("Ещё пишу");
+
             doc.Save("D:/Отчёт.doc");
             Console.WriteLine("End");
             Console.ReadKey();
         }
 
+
+        public void AppendP(string message)
+        {
+            body.Add(new XElement(WordXML.W + "p",
+                body.Element(WordXML.W + "p").Attributes(),
+                new XElement(WordXML.W + "r",
+                    new XElement(WordXML.W + "rPr",
+                        body.Element(WordXML.W + "p").Element(WordXML.W + "r").Element(WordXML.W + "rPr").Elements()),
+                    new XElement(WordXML.W + "t",
+                        message,
+                        new XAttribute(WordXML.Xml + "space", "preserve")
+                    )
+                )
+            ));
+        }
         public bool CheckNode(XNode node)
         {
             bool open = false;
@@ -72,8 +100,31 @@ namespace Word
             prevText.Value = prevText.Value.Replace("{{", "");
             nextText.Value = nextText.Value.Replace("}}", "");
 
-            text.Value = "ВСТАВИЛ";
 
+            switch (text.Value)
+            {
+                case "number":
+                    text.Value = rand.Next(10000).ToString();
+                    break;
+                case "animalType":
+                    text.Value = new string[4]{"рыбы", "птицы", "насекомые", "одноклеточные"}[rand.Next(4)];
+                    break;
+                case "action":
+                    text.Value = new string[4] { "бегать", "плавать", "прыгать", "летать" }[rand.Next(4)];
+                    break;
+                case "velocity":
+                    text.Value = rand.Next(10000).ToString();
+                    break;
+                case "distanceMeasure":
+                    text.Value = new string[4] { "парсек", "метров", "футов", "слонов" }[rand.Next(4)];
+                    break;
+                case "timeMeasure":
+                    text.Value = new string[4] { "милисекунду", "секунду", "час", "вечность" }[rand.Next(4)];
+                    break;
+                default:
+                    text.Value = "undefined";
+                    break;
+            }
         }
     }
 }
