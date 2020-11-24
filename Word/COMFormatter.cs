@@ -11,8 +11,28 @@ namespace Word
     class COMFormatter
     {
         static word.Application wordapp = new word.Application();
+        word.Document worddocument;
+        word.Documents worddocuments;
+        string outputPath = @"D:\Отчёт.doc";
 
-        public static void Close()
+
+        public COMFormatter(string template = @"D:\a2.doc")
+        {
+            wordapp.Visible = true;
+
+            Object newTemplate = false;
+            Object documentType = word.WdNewDocumentType.wdNewBlankDocument;
+            Object visible = true;
+
+            wordapp.Documents.Add(template, newTemplate, ref documentType, ref visible);
+
+            worddocuments = wordapp.Documents;
+            worddocument = worddocuments.get_Item(1);
+            worddocument.Activate();
+        }
+
+        #region Норм код
+        public void Close()
         {
             Object saveChanges = word.WdSaveOptions.wdPromptToSaveChanges;
             Object originalFormat = word.WdOriginalFormat.wdWordDocument;
@@ -20,25 +40,51 @@ namespace Word
             wordapp.Quit(ref saveChanges, ref originalFormat, ref routeDocument);
         }
 
-
-
-        public static void Apply()
+        public void Replace(string wordr, string replacement)
         {
-            word.Documents worddocuments;
-            word.Document worddocument;
-            wordapp.Visible = true;
-            string template = @"D:\a2.doc";
+            word.Range range = worddocument.StoryRanges[word.WdStoryType.wdMainTextStory];
+            range.Find.ClearFormatting();
+            
+            range.Find.Execute(FindText: wordr, ReplaceWith: replacement);
 
-            Object newTemplate = false;
-            Object documentType = word.WdNewDocumentType.wdNewBlankDocument;
-            Object visible = true;
-            wordapp.Documents.Add(template, newTemplate, ref documentType, ref visible);
+            Console.WriteLine(range.Find.Execute(FindText: wordr));
 
-            worddocuments = wordapp.Documents;
-            worddocument = worddocuments.get_Item(1);
-            worddocument.Activate();
+            try
+            {
+                worddocument.SaveAs(outputPath, word.WdSaveFormat.wdFormatDocument);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
+        public void ReplaceBookmark(string bookmark, string replacement)
+        {
+            try
+            {
+                worddocument.Bookmarks[bookmark].Range.Text = replacement;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+           
+            try
+            {
+                worddocument.SaveAs(outputPath, word.WdSaveFormat.wdFormatDocument);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
+        #endregion
+
+        #region КРУТАЯ ДИЧЬ
+        public void Apply()
+        {
             wordapp.Selection.HomeKey(word.WdUnits.wdStory, word.WdMovementType.wdMove);
             bool mb = true;
             string ObjectTemplate = "";
@@ -144,7 +190,6 @@ namespace Word
             //var wordparagraphs = worddocument.Paragraphs;
             //var wordparagraph = wordparagraphs[i];
             //wordparagraph.Range.Text = $"Текст который мы выводим в {i} абзац";
-            string outputPath = @"D:\Отчёт.doc";
 
             try
             {
@@ -155,12 +200,7 @@ namespace Word
                 Console.WriteLine(e.Message);
             }
 
-
-            Close();
-
             Console.WriteLine("Завершено");
-
-            Console.ReadLine();
         }
 
         static string FindTag()
@@ -326,6 +366,7 @@ namespace Word
             }
             return false;
         }
+        #endregion
     }
 
     public enum Tag
