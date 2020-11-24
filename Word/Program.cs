@@ -66,6 +66,7 @@ namespace Word
                         {
                             wordapp.Selection.Text = "Вася Пупкин";
                             wordapp.Selection.Font.Size = 14;
+
                             //wordapp.Selection.Font.Color = word.WdColor.wdColorBlue;
                             //wordapp.Selection.Font.Size = 20;
                             //wordapp.Selection.Font.Name = "Arial";
@@ -138,7 +139,7 @@ namespace Word
                     }
                 }
                 wordapp.Selection.MoveRight(word.WdUnits.wdCharacter, 1, word.WdMovementType.wdMove);
-                Thread.Sleep(100);
+                Thread.Sleep(1);
             }
 
             //int i = 2;
@@ -146,6 +147,13 @@ namespace Word
             //var wordparagraph = wordparagraphs[i];
             //wordparagraph.Range.Text = $"Текст который мы выводим в {i} абзац";
             string outputPath = @"D:\Отчёт.doc";
+
+            worddocument.Bookmarks["OD"].Range.Text = "Pop";
+
+
+            var range = worddocument.StoryRanges[word.WdStoryType.wdMainTextStory];
+            range.Find.ClearFormatting();
+            range.Find.Execute(FindText: "{FORPul}", ReplaceWith: "puk");
 
             try
             {
@@ -155,6 +163,8 @@ namespace Word
             {
                 Console.WriteLine(e.Message);
             }
+
+
 
 
             Close();
